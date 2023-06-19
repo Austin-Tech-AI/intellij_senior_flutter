@@ -20,7 +20,7 @@ class SeniorJBTextArea(
         super.paintComponent(roundedGraphics)
         border = getPaddedBorder()
 
-        paintHintTextIfOkayToPaint(roundedGraphics, hint, paddingValue, 5)
+        paintHintTextIfOkayToPaint(roundedGraphics, hint, paddingValue)
     }
 }
 
@@ -34,7 +34,7 @@ class SeniorJBTextField(
         super.paintComponent(roundedGraphics)
         border = getPaddedBorder()
 
-        paintHintTextIfOkayToPaint(roundedGraphics, hint, paddingValue, 7)
+        paintHintTextIfOkayToPaint(roundedGraphics, hint, paddingValue)
     }
 }
 
@@ -65,11 +65,11 @@ private fun JTextComponent.getRoundedCornersGraphic(g: Graphics, radius: Double 
  * @param g the graphics object to paint on
  * @param hint the hint text to paint
  * @param paddingValue the padding value to use
- * @param heightAdjustmentValue the height adjustment value to use -> this is used to adjust the height of the hint text as a bit of a hack
  */
-private fun JTextComponent.paintHintTextIfOkayToPaint(g: Graphics, hint: String, paddingValue: Int, heightAdjustmentValue: Int) {
+private fun JTextComponent.paintHintTextIfOkayToPaint(g: Graphics, hint: String, paddingValue: Int) {
     if (text.isEmpty() && !hasFocus()) {
         g.color = Color.GRAY
-        g.drawString(hint, (paddingValue + 2), height - (paddingValue + heightAdjustmentValue)) // Draw hint text
+        val fm = g.fontMetrics
+        g.drawString(hint, (paddingValue + 2), fm.ascent + (paddingValue + 4)) // Draw hint text
     }
 }
