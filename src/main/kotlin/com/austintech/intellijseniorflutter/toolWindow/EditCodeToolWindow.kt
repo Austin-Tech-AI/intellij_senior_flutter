@@ -3,6 +3,7 @@ package com.austintech.intellijseniorflutter.toolWindow
 import com.austintech.intellijseniorflutter.MyBundle
 import com.austintech.intellijseniorflutter.uiComponents.SeniorJBTextArea
 import com.austintech.intellijseniorflutter.listeners.SelectedFileListener
+import com.austintech.intellijseniorflutter.services.EditCodeService
 import com.austintech.intellijseniorflutter.services.SelectedFileService
 import com.austintech.intellijseniorflutter.uiComponents.SeniorJBTextField
 import com.austintech.intellijseniorflutter.uiComponents.TitledTextComponent
@@ -20,6 +21,7 @@ class EditCodeToolWindow(toolWindow: ToolWindow) : SelectedFileListener {
 
     private val messageBusConnection = toolWindow.project.messageBus.connect()
     private val selectedFileService = toolWindow.project.service<SelectedFileService>()
+    private val editCodeService = toolWindow.project.service<EditCodeService>()
 
     private lateinit var openFileNameLabel: JBLabel
     private lateinit var changesTextArea: SeniorJBTextArea
@@ -43,8 +45,14 @@ class EditCodeToolWindow(toolWindow: ToolWindow) : SelectedFileListener {
 
         val makeChangesButton = JButton(MyBundle.message("make_changes")).apply {
             addActionListener {
-                println("Changes: ${changesTextArea.text}")
-                println("Imports: ${importsTextField.text}")
+                val sourceCodeAsByteArray = selectedFileService.currentlySelectedFile?.contentsToByteArray()
+                    ?: return@addActionListener
+
+                editCodeService.sendEditTask(
+                    String(sourceCodeAsByteArray),
+                    changesTextArea.text,
+                    importsTextField.text
+                )
             }
         }
 
