@@ -45,11 +45,12 @@ class EditCodeToolWindow(toolWindow: ToolWindow) : SelectedFileListener {
 
         val makeChangesButton = JButton(MyBundle.message("make_changes")).apply {
             addActionListener {
-                val sourceCodeAsByteArray = selectedFileService.currentlySelectedFile?.contentsToByteArray()
-                    ?: return@addActionListener
+                if (selectedFileService.currentlySelectedFile == null) {
+                    return@addActionListener
+                }
 
                 editCodeService.sendEditTask(
-                    String(sourceCodeAsByteArray),
+                    selectedFileService.currentlySelectedFile!!,
                     changesTextArea.text,
                     importsTextField.text
                 )
