@@ -1,4 +1,4 @@
-package com.github.danau5tin.intellijseniorflutter
+package com.austintech.intellijseniorflutter
 
 import com.intellij.DynamicBundle
 import org.jetbrains.annotations.NonNls

@@ -1,18 +1,18 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.danau5tin.intellijseniorflutter</id>
-    <name>intellij_senior_flutter Template</name>
-    <vendor>danau5tin</vendor>
+    <id>com.austintech.intellijseniorflutter</id>
+    <name>Senior Flutter</name>
+    <vendor>Austin Tech AI</vendor>
 
     <depends>com.intellij.modules.platform</depends>
 
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.danau5tin.intellijseniorflutter.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+        <toolWindow factoryClass="com.austintech.intellijseniorflutter.toolWindow.MyToolWindowFactory" id="Senior"/>
     </extensions>
 
     <applicationListeners>
-        <listener class="com.github.danau5tin.intellijseniorflutter.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+        <listener class="com.austintech.intellijseniorflutter.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
     </applicationListeners>
 </idea-plugin>

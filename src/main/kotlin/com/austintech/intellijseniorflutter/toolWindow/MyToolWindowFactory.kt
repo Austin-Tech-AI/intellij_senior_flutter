@@ -1,4 +1,4 @@
-package com.github.danau5tin.intellijseniorflutter.toolWindow
+package com.austintech.intellijseniorflutter.toolWindow
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.thisLogger
@@ -8,8 +8,8 @@ import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBPanel
 import com.intellij.ui.content.ContentFactory
-import com.github.danau5tin.intellijseniorflutter.MyBundle
-import com.github.danau5tin.intellijseniorflutter.services.MyProjectService
+import com.austintech.intellijseniorflutter.MyBundle
+import com.austintech.intellijseniorflutter.services.MyProjectService
 import javax.swing.JButton
 
 
@@ -21,7 +21,7 @@ class MyToolWindowFactory : ToolWindowFactory {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val myToolWindow = MyToolWindow(toolWindow)
-        val content = ContentFactory.getInstance().createContent(myToolWindow.getContent(), null, false)
+        val content = ContentFactory.getInstance().createContent(myToolWindow.getContent(), "Senior", false)
         toolWindow.contentManager.addContent(content)
     }
 

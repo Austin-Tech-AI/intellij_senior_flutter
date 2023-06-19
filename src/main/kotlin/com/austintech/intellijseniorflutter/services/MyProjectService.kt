@@ -1,9 +1,9 @@
-package com.github.danau5tin.intellijseniorflutter.services
+package com.austintech.intellijseniorflutter.services
 
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
-import com.github.danau5tin.intellijseniorflutter.MyBundle
+import com.austintech.intellijseniorflutter.MyBundle
 
 @Service(Service.Level.PROJECT)
 class MyProjectService(project: Project) {

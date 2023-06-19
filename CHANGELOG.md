@@ -1,5 +1,3 @@
-<!-- Keep a Changelog guide -> https://keepachangelog.com -->
-
 # intellij_senior_flutter Changelog
 
 ## [Unreleased]
