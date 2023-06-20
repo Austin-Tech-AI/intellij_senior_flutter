@@ -5,9 +5,9 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.VirtualFile
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import com.squareup.moshi.JsonClass
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -33,7 +33,12 @@ class EditCodeService(private val project: Project) {
 
     private fun sendEditTaskRequest(map: Map<String, String?>) {
         val mediaType = "application/json; charset=utf-8".toMediaType()
-        val body = Json.encodeToString(map).toRequestBody(mediaType)
+
+        val moshiForMap = Moshi.Builder().build()
+        val adapter = moshiForMap.adapter(Map::class.java)
+
+        val jsonString = adapter.toJson(map)
+        val body = jsonString.toRequestBody(mediaType)
 
         val request = Request.Builder()
             .url("http://localhost:8080/edit")
@@ -43,24 +48,31 @@ class EditCodeService(private val project: Project) {
         client.newCall(request).execute().use { response ->
             val responseBody = response.body?.string()
 
-            if (response.code == 200 && responseBody != null) {
-                val successResponse = Json.decodeFromString(SuccessResponse.serializer(), responseBody)
-                println("New Source Code: ${successResponse.newSourceCode}")
-            }
-
             if (responseBody == null) {
                 println("Error: ${response.message}")
                 return
             }
 
-            val errorResponse = Json.decodeFromString(ErrorResponse.serializer(), responseBody)
-            println("Error: ${errorResponse.error}")
+            val moshi = Moshi.Builder()
+                .add(KotlinJsonAdapterFactory())
+                .build()
+
+            if (response.code == 200) {
+                val jsonAdapter = moshi.adapter(SuccessResponse::class.java)
+                val successResponse = jsonAdapter.fromJson(responseBody)
+                println("New Source Code: ${successResponse?.newSourceCode}")
+                return@use
+            }
+
+            val jsonAdapter = moshi.adapter(ErrorResponse::class.java)
+            val errorResponse = jsonAdapter.fromJson(responseBody)
+            println("Error: ${errorResponse?.error}")
         }
     }
 }
 
-@Serializable
+@JsonClass(generateAdapter = true)
 data class SuccessResponse(val newSourceCode: String)
 
-@Serializable
+@JsonClass(generateAdapter = true)
 data class ErrorResponse(val error: String)
