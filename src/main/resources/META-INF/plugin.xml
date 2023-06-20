@@ -9,7 +9,7 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.austintech.intellijseniorflutter.toolWindow.MyToolWindowFactory" id="Senior"/>
+        <toolWindow factoryClass="com.austintech.intellijseniorflutter.toolWindow.SeniorToolWindowFactory" id="Senior"/>
     </extensions>
 
     <applicationListeners>
