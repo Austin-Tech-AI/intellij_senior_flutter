@@ -1,10 +1,14 @@
 package com.austintech.intellijseniorflutter.services
 
+import com.austintech.intellijseniorflutter.listeners.EditCodeListener
 import com.austintech.intellijseniorflutter.network.HttpClient
 import com.intellij.openapi.components.Service
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectFileIndex
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.messages.Topic
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -17,6 +21,15 @@ class EditCodeService(private val project: Project) {
 
     private val client = HttpClient.client
 
+    var editCodeState: EditCodeState = EditCodeState.AwaitingUserInput
+
+    companion object {
+        val EDIT_CODE_TOPIC = Topic.create("Edit code", EditCodeListener::class.java)
+    }
+
+    fun markAsSaved() {
+        updateState(EditCodeState.AwaitingUserInput)
+    }
 
     fun sendEditTask(file: VirtualFile, userPrompt: String, manualImports: String) {
         val rootPath = ProjectFileIndex.getInstance(project).getContentRootForFile(file)?.path
@@ -28,7 +41,12 @@ class EditCodeService(private val project: Project) {
             "projectRootPath" to rootPath
         )
 
-        sendEditTaskRequest(map)
+        object : Task.Backgroundable(project, "AI is editing your code", false) {
+            override fun run(indicator: ProgressIndicator) {
+                updateState(EditCodeState.Loading)
+                sendEditTaskRequest(map)
+            }
+        }.queue()
     }
 
     private fun sendEditTaskRequest(map: Map<String, String?>) {
@@ -60,14 +78,24 @@ class EditCodeService(private val project: Project) {
             if (response.code == 200) {
                 val jsonAdapter = moshi.adapter(SuccessResponse::class.java)
                 val successResponse = jsonAdapter.fromJson(responseBody)
-                println("New Source Code: ${successResponse?.newSourceCode}")
+                updateState(EditCodeState.Loaded(successResponse!!.newSourceCode))
                 return@use
             }
 
             val jsonAdapter = moshi.adapter(ErrorResponse::class.java)
             val errorResponse = jsonAdapter.fromJson(responseBody)
-            println("Error: ${errorResponse?.error}")
+            println("Error: ${errorResponse!!.error}")
+            updateState(EditCodeState.AwaitingUserInput)
         }
+    }
+
+    private fun updateState(newState: EditCodeState) {
+        editCodeState = newState
+        project.messageBus.syncPublisher(EDIT_CODE_TOPIC).onStateChanged(newState)
+    }
+
+    fun cancel() {
+        updateState(EditCodeState.AwaitingUserInput)
     }
 }
 
