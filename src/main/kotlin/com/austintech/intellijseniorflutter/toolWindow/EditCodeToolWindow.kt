@@ -40,6 +40,8 @@ class EditCodeToolWindow(toolWindow: ToolWindow) : SelectedFileListener {
             val screenHeight = Toolkit.getDefaultToolkit().screenSize.height
             val preferredHeight = screenHeight / 3
             preferredSize = preferredSize.apply { height = preferredHeight }
+
+            lineWrap = true
         }
         importsTextField = SeniorJBTextField(MyBundle.message("enter_class_names_to_provide_context"))
 
